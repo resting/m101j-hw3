@@ -4,11 +4,14 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.Updates;
 import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.mongodb.client.model.Updates.combine;
 
 
 public class BlogPostDAO {
@@ -88,5 +91,11 @@ public class BlogPostDAO {
         // - email is optional and may come in NULL. Check for that.
         // - best solution uses an update command to the database and a suitable
         //   operator to append the comment on to any existing list of comments
+        Document comment = new Document()
+                .append("author", name)
+                .append("email", email)
+                .append("body", body);
+        postsCollection.updateOne(Filters.eq("permalink", permalink),
+                Updates.addToSet("comments", comment));
     }
 }
